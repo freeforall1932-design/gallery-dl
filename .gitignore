@@ -1,35 +1,11 @@
 ```
-# Python
+# Python cache files
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+*.pyc
+*.pyo
+*.pyd
 
-# IDE
-.vscode/
-.idea/
-
-# Logs
-*.log
-
-# Environment
-.env
-.env.local
-.env.*
+# Compiled Python files in gallery_dl
+gallery_dl/__pycache__/
+gallery_dl/**/*.pyc
 ```
