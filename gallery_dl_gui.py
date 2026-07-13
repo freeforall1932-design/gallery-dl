@@ -115,10 +115,12 @@ class GalleryDLGUI:
         self.urls_tab = ttk.Frame(notebook, padding=10)
         self.auth_tab = ttk.Frame(notebook, padding=10)
         self.input_tab = ttk.Frame(notebook, padding=10)
+        self.advanced_tab = ttk.Frame(notebook, padding=10)  # Phase 2
         
         notebook.add(self.urls_tab, text="URLs")
         notebook.add(self.auth_tab, text="Authentication")
         notebook.add(self.input_tab, text="Input Methods")
+        notebook.add(self.advanced_tab, text="Advanced")  # Phase 2
         
         # ===== URL Input Section (in URLs tab) =====
         url_frame = ttk.LabelFrame(self.urls_tab, text="URLs to Download", padding=10)
@@ -146,6 +148,9 @@ class GalleryDLGUI:
         
         # ===== Input Methods Section (in Input tab) =====
         self.create_input_methods_section()
+        
+        # ===== Advanced Section (in Advanced tab) - Phase 2 =====
+        self.create_advanced_section()
         
         # Close notebook to allow other sections
         # ===== Destination Section =====
@@ -251,6 +256,91 @@ class GalleryDLGUI:
         self.log_text.tag_configure('warning', foreground='orange')
         self.log_text.tag_configure('error', foreground='red')
         self.log_text.tag_configure('debug', foreground='gray')
+        
+    def create_advanced_section(self):
+        """Create advanced options section in Advanced tab - Phase 2"""
+        # Network Settings
+        net_frame = ttk.LabelFrame(self.advanced_tab, text="Network Settings", padding=10)
+        net_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        # Proxy
+        proxy_frame = ttk.Frame(net_frame)
+        proxy_frame.pack(fill=tk.X, pady=3)
+        ttk.Label(proxy_frame, text="Proxy:", width=15).pack(side=tk.LEFT)
+        self.proxy_var = tk.StringVar()
+        proxy_entry = ttk.Entry(proxy_frame, textvariable=self.proxy_var, width=40)
+        proxy_entry.pack(side=tk.LEFT, padx=5)
+        ttk.Label(proxy_frame, text="(e.g., http://host:port)", foreground="gray").pack(side=tk.LEFT)
+        
+        # User-Agent
+        ua_frame = ttk.Frame(net_frame)
+        ua_frame.pack(fill=tk.X, pady=3)
+        ttk.Label(ua_frame, text="User-Agent:", width=15).pack(side=tk.LEFT)
+        self.ua_var = tk.StringVar()
+        ua_entry = ttk.Entry(ua_frame, textvariable=self.ua_var, width=40)
+        ua_entry.pack(side=tk.LEFT, padx=5)
+        
+        # Retries and Timeout
+        retry_frame = ttk.Frame(net_frame)
+        retry_frame.pack(fill=tk.X, pady=3)
+        ttk.Label(retry_frame, text="Retries:", width=15).pack(side=tk.LEFT)
+        self.retries_var = tk.StringVar(value="4")
+        retries_spin = ttk.Spinbox(retry_frame, from_=0, to=20, textvariable=self.retries_var, width=5)
+        retries_spin.pack(side=tk.LEFT, padx=5)
+        
+        ttk.Label(retry_frame, text="Timeout (s):", width=12).pack(side=tk.LEFT, padx=(20,0))
+        self.timeout_var = tk.StringVar(value="30")
+        timeout_spin = ttk.Spinbox(retry_frame, from_=1, to=300, textvariable=self.timeout_var, width=5)
+        timeout_spin.pack(side=tk.LEFT, padx=5)
+        
+        # Connection options
+        conn_frame = ttk.Frame(net_frame)
+        conn_frame.pack(fill=tk.X, pady=3)
+        self.ipv4_var = tk.BooleanVar()
+        ttk.Checkbutton(conn_frame, text="Force IPv4", variable=self.ipv4_var).pack(side=tk.LEFT, padx=10)
+        self.ipv6_var = tk.BooleanVar()
+        ttk.Checkbutton(conn_frame, text="Force IPv6", variable=self.ipv6_var).pack(side=tk.LEFT, padx=10)
+        self.no_check_cert_var = tk.BooleanVar()
+        ttk.Checkbutton(conn_frame, text="Skip SSL Verification", variable=self.no_check_cert_var).pack(side=tk.LEFT, padx=10)
+        
+        # Rate Limiting & Sleep
+        rate_frame = ttk.LabelFrame(self.advanced_tab, text="Rate Limiting & Sleep", padding=10)
+        rate_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        sleep_frame = ttk.Frame(rate_frame)
+        sleep_frame.pack(fill=tk.X, pady=3)
+        ttk.Label(sleep_frame, text="Sleep (sec):", width=15).pack(side=tk.LEFT)
+        self.sleep_var = tk.StringVar()
+        sleep_entry = ttk.Entry(sleep_frame, textvariable=self.sleep_var, width=10)
+        sleep_entry.pack(side=tk.LEFT, padx=5)
+        ttk.Label(sleep_frame, text="Wait between downloads", foreground="gray").pack(side=tk.LEFT)
+        
+        ratelimit_frame = ttk.Frame(rate_frame)
+        ratelimit_frame.pack(fill=tk.X, pady=3)
+        ttk.Label(ratelimit_frame, text="Rate Limit:", width=15).pack(side=tk.LEFT)
+        self.rate_limit_var = tk.StringVar()
+        ratelimit_entry = ttk.Entry(ratelimit_frame, textvariable=self.rate_limit_var, width=10)
+        ratelimit_entry.pack(side=tk.LEFT, padx=5)
+        ttk.Label(ratelimit_frame, text="KB/s (0 = unlimited)", foreground="gray").pack(side=tk.LEFT)
+        
+        # File Handling
+        file_frame = ttk.LabelFrame(self.advanced_tab, text="File Handling", padding=10)
+        file_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        chunk_frame = ttk.Frame(file_frame)
+        chunk_frame.pack(fill=tk.X, pady=3)
+        ttk.Label(chunk_frame, text="Chunk Size (KB):", width=15).pack(side=tk.LEFT)
+        self.chunk_size_var = tk.StringVar(value="256")
+        chunk_spin = ttk.Spinbox(chunk_frame, from_=64, to=4096, textvariable=self.chunk_size_var, width=5)
+        chunk_spin.pack(side=tk.LEFT, padx=5)
+        
+        part_frame = ttk.Frame(file_frame)
+        part_frame.pack(fill=tk.X, pady=3)
+        self.part_files_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(part_frame, text="Use .part files during download", variable=self.part_files_var).pack(side=tk.LEFT, padx=10)
+        
+        self.skip_download_var = tk.BooleanVar()
+        ttk.Checkbutton(part_frame, text="Skip download (metadata only)", variable=self.skip_download_var).pack(side=tk.LEFT, padx=10)
         
     def create_status_bar(self):
         """Create status bar at bottom"""
@@ -638,6 +728,60 @@ class GalleryDLGUI:
             cmd.append("-g")
         if self.dump_json_var.get():
             cmd.append("-j")
+        
+        # Advanced options - Phase 2
+        # Proxy
+        proxy = self.proxy_var.get().strip()
+        if proxy:
+            cmd.extend(["--proxy", proxy])
+        
+        # User-Agent
+        ua = self.ua_var.get().strip()
+        if ua:
+            cmd.extend(["--user-agent", ua])
+        
+        # Retries
+        retries = self.retries_var.get().strip()
+        if retries and retries != "4":
+            cmd.extend(["--retries", retries])
+        
+        # Timeout
+        timeout = self.timeout_var.get().strip()
+        if timeout and timeout != "30":
+            cmd.extend(["--timeout", timeout])
+        
+        # IPv4/IPv6
+        if self.ipv4_var.get():
+            cmd.append("--ipv4")
+        if self.ipv6_var.get():
+            cmd.append("--ipv6")
+        
+        # Skip SSL verification
+        if self.no_check_cert_var.get():
+            cmd.append("--no-check-certificate")
+        
+        # Sleep
+        sleep = self.sleep_var.get().strip()
+        if sleep:
+            cmd.extend(["--sleep", sleep])
+        
+        # Rate limit
+        rate_limit = self.rate_limit_var.get().strip()
+        if rate_limit and rate_limit != "0":
+            cmd.extend(["--rate-limit", rate_limit])
+        
+        # Chunk size
+        chunk_size = self.chunk_size_var.get().strip()
+        if chunk_size and chunk_size != "256":
+            cmd.extend(["--chunk-size", chunk_size])
+        
+        # Part files
+        if not self.part_files_var.get():
+            cmd.append("--no-part-files")
+        
+        # Skip download
+        if self.skip_download_var.get():
+            cmd.append("--skip-download")
             
         # Add URLs
         cmd.extend(urls)
